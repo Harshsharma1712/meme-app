@@ -14,9 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.14"
   },
   "devDependencies": {
