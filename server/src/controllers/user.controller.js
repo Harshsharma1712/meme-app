@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { register, login } from "../services/user.service.js";
 import { successResponse, errorResponse } from "../utils/response.js";
+import { uploadUserAvatarService } from "../services/user.service.js";
 
 export const registerUser = async (req, res) => {
     try {
@@ -39,3 +40,17 @@ export const loginUser = async (req, res) => {
     }
 };
 
+export const uploadUserAvatarController = async (req, res) => {
+    try {
+
+        const userId = req.user.id;
+        const file = req.file
+
+        const result = await uploadUserAvatarService({ userId, file });
+
+        return successResponse(res, "Avatar Uploded successfully", result)
+
+    } catch (error) {
+        return errorResponse(res, error.message, 400)
+    }
+}

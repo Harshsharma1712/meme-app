@@ -2,8 +2,11 @@ import bcrypt from "bcryptjs";
 import db from "../db/index.js";
 import { users } from "../db/schema/index.js";
 import { generateToken } from "../utils/jwt.js";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { uploadToImagekit } from "../utils/uploadMedia.js";
+import { media } from "../db/schema/index.js";
 
+// Register user
 export const register = async ({ username, email, password }) => {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedUsername = username.trim().toLowerCase();
@@ -58,6 +61,7 @@ export const register = async ({ username, email, password }) => {
 
 };
 
+// login user
 export const login = async ({ email, password }) => {
     const normalizedEmail = email.trim().toLowerCase();
 
@@ -112,4 +116,74 @@ export const login = async ({ email, password }) => {
         },
         token,
     };
+}
+
+// upload user avatar
+export const uploadUserAvatarService = async ({ userId, file }) => {
+    try {
+
+        if (!file) {
+            throw new Error("Avatar File is required");
+        }
+
+        // 1) Find current avatar if exists
+        const query = sql`
+        SELECT * FROM users
+        WHERE id = ${userId}
+        LIMIT 1
+        `;
+
+        const result = await db.execute(query);
+
+        const existingUser = result.rows?.[0] || null
+        console.log(existingUser)
+
+        if (!existingUser) {
+            throw new Error("User not found")
+        }
+
+        // 2) Upload new avatar to ImageKit
+        const uploaded = await uploadToImagekit({
+            fileBuffer: file.buffer,
+            fileName: `${userId}-${Date.now()}-${file.originalname}`,
+            folder: "/media"
+        });
+
+        console.log(uploaded)
+
+        // 3) Save media record
+        const [newMedia] = await db
+            .insert(media)
+            .values({
+                url: uploaded.url,
+                fileId: uploaded.fileId,
+                fileType: uploaded.fileType || file.mimetype,
+                format: uploaded.name?.split(".").pop() || null,
+                width: uploaded.width || null,
+                height: uploaded.height || null,
+                sizeKb: uploaded.size ? Math.round(uploaded.size / 1024) : null,
+                uploadedBy: userId,
+            })
+            .returning();
+
+        // 4) Update user's avatarMediaId
+        await db
+            .update(users)
+            .set({
+                avatarMediaId: newMedia.id,
+                updatedAt: new Date()
+            })
+            .where(eq(users.id, userId))
+
+        // 5) OPTIONAL: delete previous image from ImageKit later if you want cleanup
+
+
+        return {
+            mediaId: newMedia.id,
+            avatarUrl: newMedia.url,
+        }
+
+    } catch (error) {
+        throw new Error("Error in uploadUserAvatarService")
+    }
 }

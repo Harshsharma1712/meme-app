@@ -1,7 +1,8 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { body } from "express-validator";
-import { registerUser, loginUser } from "../controllers/user.controller.js";
+import { registerUser, loginUser, uploadUserAvatarController } from "../controllers/user.controller.js";
+import { upload } from "../utils/multer.js"
 
 const router = express.Router();
 
@@ -54,6 +55,13 @@ router.post(
             .withMessage("Password is required"),
     ],
     loginUser
+);
+
+router.post(
+    "/avatar",
+    authMiddleware,
+    upload.single("user-avatar"),
+    uploadUserAvatarController
 );
 
 export default router;
