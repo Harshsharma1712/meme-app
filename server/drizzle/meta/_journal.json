@@ -8,6 +8,13 @@
       "when": 1775231469610,
       "tag": "0000_plain_deathbird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775453188369,
+      "tag": "0001_dark_talkback",
+      "breakpoints": true
     }
   ]
 }
