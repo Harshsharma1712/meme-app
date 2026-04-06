@@ -1,6 +1,6 @@
 import { pgTable, uuid, primaryKey } from "drizzle-orm/pg-core";
-import { memes } from "./memes";
-import { tags } from "./tags";
+import { memes } from "./memes.js";
+import { tags } from "./tags.js";
 
 export const memeTags = pgTable(
   "meme_tags",

@@ -19,6 +19,10 @@ app.get("/api/health", (req, res) => {
     res.json({ success: true, message: "Server is running 🚀" });
 });
 
+import userRoutes from "./routes/user.routes.js";
+
+app.use("/api/users", userRoutes);
+
 // Error handler (ALWAYS LAST)
 app.use(errorHandler);
 
