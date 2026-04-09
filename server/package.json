@@ -5,8 +5,8 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "cross-env NODE_ENV=local nodemon src/bootstrap.js",
+    "start": "cross-env NODE_ENV=production node src/bootstrap.js",
     "db:generate": "npx drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate"
   },
@@ -16,6 +16,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.4.0",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
