@@ -25,8 +25,8 @@ export default function Login() {
       const token = response.data?.data?.token;
       // Fetch user profile right after login if login only returns token
 
-      console.log("FULL RESPONSE:", response);
-      console.log("RESPONSE.DATA:", response.data);
+      // console.log("FULL RESPONSE:", response);
+      // console.log("RESPONSE.DATA:", response.data);
 
       let userData = response.data?.data?.user;
 
