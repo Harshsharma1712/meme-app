@@ -33,7 +33,7 @@ export default function Login() {
       if (!userData && typeof token === 'string') {
         // If login only gives the token, we need to inject it first
         localStorage.setItem('token', token);
-        const meResponse = await api.get('/users/me');
+        const meResponse = await api.get('/users/avatar');
         userData = meResponse.data.user || meResponse.data;
       }
 

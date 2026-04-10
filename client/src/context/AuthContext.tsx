@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       try {
         const response = await api.get('/users/avatar');
-        console.log("Response", response)
+        // console.log("Response", response)
         setUser(response.data.data); // handles variations
       } catch (error) {
         console.error('Failed to fetch user:', error);
