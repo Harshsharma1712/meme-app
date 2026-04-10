@@ -5,24 +5,23 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import { Button } from './components/ui/button';
-
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-zinc-400">Loading...</div>;
   }
-  
+
   if (!user) {
     return <Navigate to="/login" />;
   }
-  
+
   return <>{children}</>;
 };
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  
+
   return (
     <nav className="border-b border-zinc-800 bg-black/50 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Configure the base URL using an environment variable if available, otherwise fallback
 const baseURL = import.meta.env.VITE_API_URL;
+console.log("Base URL", baseURL)
 
 const api = axios.create({
   baseURL,

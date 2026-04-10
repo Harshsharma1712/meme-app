@@ -10,12 +10,14 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://meme-app-eight-eta.vercel.app/"
+        "https://meme-app-eight-eta.vercel.app"
     ],
     credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.options("*", cors());
 
 // Logger
 app.use(morgan("dev"));
