@@ -132,7 +132,7 @@ export const uploadUserAvatarService = async ({ userId, file }) => {
         `;
 
     const result = await db.execute(query);
-
+    console.log(result.rows)
     const existingUser = result.rows?.[0] || null;
     console.log(existingUser);
 
@@ -180,7 +180,8 @@ export const uploadUserAvatarService = async ({ userId, file }) => {
       avatarUrl: newMedia.url,
     };
   } catch (error) {
-    throw new Error("Error in uploadUserAvatarService");
+    console.log("Avatar Service error", error);
+    throw error;
   }
 };
 

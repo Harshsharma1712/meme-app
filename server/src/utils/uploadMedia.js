@@ -6,6 +6,12 @@ const imagekit = new Imagekit({
     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
 });
 
+// console.log("ENV CHECK:", {
+//     pub: process.env.IMAGEKIT_PUBLIC_KEY,
+//     priv: process.env.IMAGEKIT_PRIVATE_KEY,
+//     url: process.env.IMAGEKIT_URL_ENDPOINT,
+// });
+
 export const uploadToImagekit = async ({ fileBuffer, fileName, folder = "/media" }) => {
     try {
         const response = await imagekit.upload({
@@ -17,7 +23,8 @@ export const uploadToImagekit = async ({ fileBuffer, fileName, folder = "/media"
 
         return response;
     } catch (error) {
-        throw new Error("Image upload failed");
+        console.log("ImageKit upload error", error);
+        throw error
     }
 }
 
