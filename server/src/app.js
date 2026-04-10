@@ -8,7 +8,10 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://meme-app-eight-eta.vercel.app"
+    ],
     credentials: true
 }));
 app.use(express.json());
