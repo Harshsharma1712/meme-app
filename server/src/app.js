@@ -10,7 +10,7 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://meme-app-eight-eta.vercel.app"
+        "https://meme-app-eight-eta.vercel.app/api"
     ],
     credentials: true
 }));
