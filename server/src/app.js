@@ -27,8 +27,10 @@ app.get("/api/health", (req, res) => {
 });
 
 import userRoutes from "./routes/user.routes.js";
+import memeRoutes from "./routes/meme.routes.js";
 
 app.use("/api/users", userRoutes);
+app.use("/api/memes", memeRoutes);
 
 // Error handler (ALWAYS LAST)
 app.use(errorHandler);

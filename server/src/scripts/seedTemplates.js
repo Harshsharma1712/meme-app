@@ -1,7 +1,8 @@
+import "../config/env.js"
+
 import db from "../db/index.js";
 import { sql } from "drizzle-orm";
 import { uploadToImagekit } from "../utils/uploadMedia.js";
-import "../config/env.js"
 
 import fs from "fs";
 import path from "path";
