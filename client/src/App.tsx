@@ -1,9 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Feed from './pages/Feed';
 import { Button } from './components/ui/button';
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -21,6 +22,9 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="border-b border-zinc-800 bg-black/50 backdrop-blur-md sticky top-0 z-50">
@@ -34,6 +38,24 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
+                <div className="flex items-center gap-2 rounded-full bg-zinc-900/80 border border-zinc-800 p-1">
+                  <Link to="/feed">
+                    <Button
+                      variant="ghost"
+                      className={`h-8 px-3 text-sm ${isActive('/feed') ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70'}`}
+                    >
+                      Feed
+                    </Button>
+                  </Link>
+                  <Link to="/profile">
+                    <Button
+                      variant="ghost"
+                      className={`h-8 px-3 text-sm ${isActive('/profile') ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70'}`}
+                    >
+                      Profile
+                    </Button>
+                  </Link>
+                </div>
                 <span className="text-sm font-medium text-zinc-400 hidden sm:block">
                   Hello, <span className="text-zinc-100">{user.username}</span>
                 </span>
@@ -70,7 +92,9 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute><Navigate to="/feed" replace /></PrivateRoute>} />
+          <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Routes>
       </main>
     </div>
