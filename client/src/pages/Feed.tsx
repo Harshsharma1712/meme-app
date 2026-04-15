@@ -21,6 +21,7 @@ interface MemePost {
   created_at: string;
   username: string;
   media_url: string;
+  avatar_url: string;
   likes_count: string | number;
   comments_count: string | number;
 }
@@ -248,7 +249,7 @@ export default function Feed() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9 border border-zinc-700">
-                      <AvatarImage src="" alt={meme.username} />
+                      <AvatarImage src={meme.avatar_url} alt={meme.username} />
                       <AvatarFallback className="bg-zinc-800 text-zinc-200">
                         {meme.username?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>

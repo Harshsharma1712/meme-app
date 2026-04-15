@@ -18,7 +18,7 @@ export const getTemplatesService = async () => {
     const result = await db.execute(query);
 
     const templates = result.rows || null
-    console.log(templates)
+    // console.log(templates)
 
     return templates
 
@@ -70,7 +70,7 @@ export const createMemeService = async ({
     const createMemeQueryResult = await db.execute(createMemeQuery);
 
     const createdMeme = createMemeQueryResult.rows?.[0] || null;
-    console.log(createdMeme)
+    // console.log(createdMeme)
 
     return createdMeme;
 };
@@ -87,7 +87,8 @@ export const getMemeService = async () => {
 
         u.id AS user_id,
         u.username,
-        u.avatar_media_id,
+
+        avatar.url AS avatar_url,
 
         m.url AS media_url,
 
@@ -97,11 +98,14 @@ export const getMemeService = async () => {
         FROM memes me
 
         LEFT JOIN users u ON me.user_id = u.id
+
+        LEFT JOIN media avatar ON u.avatar_media_id = avatar.id
+
         LEFT JOIN media m ON me.media_id = m.id
         LEFT JOIN likes l ON l.meme_id = me.id
         LEFT JOIN comments c ON c.meme_id = me.id
 
-        GROUP BY me.id, u.id, m.url
+        GROUP BY me.id, u.id, m.url, avatar.url
 
         ORDER BY me.created_at DESC
     `;
