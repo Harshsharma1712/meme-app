@@ -9,7 +9,8 @@
     "start": "cross-env NODE_ENV=production node src/bootstrap.js",
     "db:generate": "npx drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate",
-    "seed:templates": "node src/scripts/seedTemplates.js"
+    "seed:templates": "node src/scripts/seedTemplates.js",
+    "seed:templates:production": "cross-env NODE_ENV=production node src/scripts/seedTemplates.js"
   },
   "author": "",
   "license": "ISC",
