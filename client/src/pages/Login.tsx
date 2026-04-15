@@ -50,7 +50,7 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md bg-zinc-950 border-zinc-800 shadow-2xl backdrop-blur-xl">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold tracking-tight bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold tracking-tight bg-linear-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
             Welcome Back
           </CardTitle>
           <CardDescription className="text-zinc-400">
@@ -88,7 +88,7 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4 pt-2">
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium shadow-lg hover:shadow-violet-500/25 transition-all duration-300"
+              className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium shadow-lg hover:shadow-violet-500/25 transition-all duration-300"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}

@@ -31,7 +31,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-black tracking-tighter bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+            <Link to="/" className="text-xl font-black tracking-tighter bg-linear-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
               MEME APP
             </Link>
           </div>

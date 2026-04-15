@@ -212,7 +212,7 @@ export default function Feed() {
             <Button
               type="submit"
               disabled={posting || !formData.template_id}
-              className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
+              className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
             >
               {posting ? 'Posting...' : 'Post Meme'}
             </Button>
@@ -267,7 +267,7 @@ export default function Feed() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <img src={meme.media_url} alt={meme.caption} className="h-80 w-full rounded-lg border border-zinc-800 object-cover" />
+                <img src={meme.media_url} alt={meme.caption} className="w-full max-h-100 sm:max-h-125 md:max-h-150 object-contain bg-black rounded-lg border border-zinc-800" />
                 <p className="text-zinc-200">{meme.caption}</p>
                 <div className="text-sm text-zinc-400">
                   {meme.likes_count} likes • {meme.comments_count} comments
