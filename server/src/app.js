@@ -29,10 +29,12 @@ app.get("/api/health", (req, res) => {
 import userRoutes from "./routes/user.routes.js";
 import memeRoutes from "./routes/meme.routes.js";
 import likeRoutes from "./routes/like.routes.js";
+import commentRoutes from "./routes/comments.routes.js";
 
 app.use("/api/users", userRoutes);
 app.use("/api/memes", memeRoutes);
 app.use("/api/likes", likeRoutes);
+app.use("/api/comment", commentRoutes);
 
 // Error handler (ALWAYS LAST)
 app.use(errorHandler);
