@@ -56,8 +56,9 @@ export const getLikeCountController = async (req, res) => {
         }
 
         const { memeId } = req.params;
+        const userId = req.user.id;
 
-        const count = await getLikeCountService(memeId);
+        const count = await getLikeCountService(memeId, userId);
 
         return successResponse(res, "Count get fetch successfully", count, 200);
 

@@ -16,6 +16,6 @@ router.post("/:memeId", authMiddleware,likeMemeController)
 router.delete("/:memeId", authMiddleware, unLikeMemeController);
 
 // get like count 
-router.get("/:memeId/count", getLikeCountController)
+router.get("/:memeId/count", authMiddleware, getLikeCountController)
 
 export default router

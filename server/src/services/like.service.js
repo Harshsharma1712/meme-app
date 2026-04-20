@@ -29,6 +29,7 @@ export const unLikeMemeService = async (userId, memeId) => {
     const unLikeMemeQuery = sql`
     DELETE FROM likes
     WHERE user_id = ${userId} AND meme_id = ${memeId}
+    RETURNING *
     `;
 
     const unLikeMemeQueryResult = await db.execute(unLikeMemeQuery);
@@ -40,20 +41,16 @@ export const unLikeMemeService = async (userId, memeId) => {
 
 }
 
-export const getLikeCountService = async (memeId) => {
+export const getLikeCountService = async (memeId, userId) => {
     
-    // const getLikeCountQuery = sql`
-    // SELECT COUNT(*)::int AS count
-    // FROM likes
-    // WHERE meme_id = ${memeId}
-    // `;
-
     const getLikeCountQuery = sql`
     SELECT 
       COUNT(*)::int AS count,
       EXISTS (
-        SELECT 1 FROM likes 
+        SELECT 1 
+        FROM likes 
         WHERE meme_id = ${memeId}
+        AND user_id = ${userId}
       ) AS is_liked
     FROM likes
     WHERE meme_id = ${memeId}
