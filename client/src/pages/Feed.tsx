@@ -1,17 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-
-interface MemeTemplate {
-  id: string;
-  name: string;
-  tags: string[];
-  media_url: string;
-}
 
 interface MemePost {
   id: string;
@@ -37,21 +30,8 @@ interface MemeComment {
   created_at: string;
   username: string;
   avatar_url?: string;
+  user_id?: string;
 }
-
-interface MemeFormState {
-  template_id: string;
-  caption: string;
-  topic: string;
-  style: string;
-}
-
-const initialFormState: MemeFormState = {
-  template_id: '',
-  caption: '',
-  topic: '',
-  style: '',
-};
 
 const formatRelativeTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -68,7 +48,7 @@ const formatRelativeTime = (timestamp: string) => {
 };
 
 export default function Feed() {
-  const [templates, setTemplates] = useState<MemeTemplate[]>([]);
+  const { user } = useAuth();
   const [memes, setMemes] = useState<MemePost[]>([]);
   const [likeMeta, setLikeMeta] = useState<Record<string, MemeLikeMeta>>({});
   const [commentMap, setCommentMap] = useState<Record<string, MemeComment[]>>({});
@@ -76,23 +56,16 @@ export default function Feed() {
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [commentLoading, setCommentLoading] = useState<Record<string, boolean>>({});
   const [loadingFeed, setLoadingFeed] = useState(true);
-  const [posting, setPosting] = useState(false);
   const [likeUpdatingId, setLikeUpdatingId] = useState('');
   const [commentPostingId, setCommentPostingId] = useState('');
   const [commentDeletingId, setCommentDeletingId] = useState('');
   const [error, setError] = useState('');
-  const [postMessage, setPostMessage] = useState('');
-  const [formData, setFormData] = useState<MemeFormState>(initialFormState);
 
-  const selectedTemplate = useMemo(
-    () => templates.find((template) => template.id === formData.template_id),
-    [formData.template_id, templates]
-  );
-
-  const loadTemplates = async () => {
-    const response = await api.get('/memes/templates');
-    const fetchedTemplates = response.data?.data || [];
-    setTemplates(Array.isArray(fetchedTemplates) ? fetchedTemplates : []);
+  const parseIsLiked = (value: unknown) => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') return value.toLowerCase() === 'true';
+    if (typeof value === 'number') return value === 1;
+    return false;
   };
 
   const fetchLikeCount = async (memeId: string, fallbackCount = 0) => {
@@ -101,7 +74,7 @@ export default function Feed() {
       const data = response.data?.data;
       return {
         count: Number(data?.count ?? fallbackCount),
-        is_liked: Boolean(data?.is_liked),
+        is_liked: parseIsLiked(data?.is_liked),
       };
     } catch {
       return {
@@ -149,7 +122,6 @@ export default function Feed() {
       setLoadingFeed(true);
       setError('');
       try {
-        await loadTemplates();
         const memeList = await loadMemes();
         await loadLikeMeta(memeList);
       } catch (err: any) {
@@ -161,29 +133,6 @@ export default function Feed() {
 
     loadFeed();
   }, []);
-
-  const handleInputChange = (field: keyof MemeFormState, value: string) => {
-    setFormData((previous) => ({ ...previous, [field]: value }));
-  };
-
-  const handleCreateMeme = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setPosting(true);
-    setPostMessage('');
-    setError('');
-
-    try {
-      await api.post('/memes/post', formData);
-      setPostMessage('Meme posted successfully.');
-      setFormData(initialFormState);
-      const memeList = await loadMemes();
-      await loadLikeMeta(memeList);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Unable to post meme.');
-    } finally {
-      setPosting(false);
-    }
-  };
 
   const handleToggleLike = async (memeId: string) => {
     const currentlyLiked = likeMeta[memeId]?.is_liked;
@@ -245,108 +194,24 @@ export default function Feed() {
     }
   };
 
+  const canDeleteComment = (comment: MemeComment) => {
+    if (!user) return false;
+
+    // Prefer stable identity when backend returns user_id; fallback to username.
+    if (comment.user_id) {
+      return comment.user_id === user.id;
+    }
+
+    return comment.username === user.username;
+  };
+
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8">
-      <Card className="bg-zinc-950 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-zinc-100">Create Meme</CardTitle>
-          <CardDescription className="text-zinc-400">
-            Pick a template and share your next banger with the feed.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleCreateMeme} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="template-select" className="text-zinc-300">
-                Template
-              </Label>
-              <select
-                id="template-select"
-                value={formData.template_id}
-                onChange={(event) => handleInputChange('template_id', event.target.value)}
-                required
-                className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              >
-                <option value="">Select a template</option>
-                {templates.map((template) => (
-                  <option key={template.id} value={template.id}>
-                    {template.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedTemplate && (
-              <div className="overflow-hidden rounded-lg border border-zinc-800">
-                <img src={selectedTemplate.media_url} alt={selectedTemplate.name} className="h-44 w-full object-cover" />
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="topic" className="text-zinc-300">
-                  Topic
-                </Label>
-                <Input
-                  id="topic"
-                  value={formData.topic}
-                  onChange={(event) => handleInputChange('topic', event.target.value)}
-                  placeholder="Relationship, office, tech..."
-                  required
-                  className="bg-zinc-900 border-zinc-800 text-zinc-100"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="style" className="text-zinc-300">
-                  Style
-                </Label>
-                <Input
-                  id="style"
-                  value={formData.style}
-                  onChange={(event) => handleInputChange('style', event.target.value)}
-                  placeholder="Humor, sarcasm, satire..."
-                  required
-                  className="bg-zinc-900 border-zinc-800 text-zinc-100"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="caption" className="text-zinc-300">
-                Caption
-              </Label>
-              <Input
-                id="caption"
-                value={formData.caption}
-                onChange={(event) => handleInputChange('caption', event.target.value)}
-                placeholder="Write your caption..."
-                required
-                className="bg-zinc-900 border-zinc-800 text-zinc-100"
-              />
-            </div>
-
-            {postMessage && (
-              <div className="rounded-md border border-emerald-900/50 bg-emerald-950/40 p-3 text-sm text-emerald-300">
-                {postMessage}
-              </div>
-            )}
-            {error && (
-              <div className="rounded-md border border-red-900/50 bg-red-950/40 p-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={posting || !formData.template_id}
-              className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
-            >
-              {posting ? 'Posting...' : 'Post Meme'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
+      {error && (
+        <div className="rounded-md border border-red-900/50 bg-red-950/40 p-3 text-sm text-red-300">
+          {error}
+        </div>
+      )}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-zinc-100">Meme Feed</h2>
@@ -407,7 +272,7 @@ export default function Feed() {
                     onClick={() => handleToggleLike(meme.id)}
                     disabled={likeUpdatingId === meme.id}
                   >
-                    {likeUpdatingId === meme.id ? 'Updating...' : likeMeta[meme.id]?.is_liked ? 'Unlike' : 'Like'}
+                    {likeUpdatingId === meme.id ? 'Updating...' : likeMeta[meme.id]?.is_liked ? 'Unlike' : '♡ Like'}
                   </Button>
                   <Button
                     type="button"
@@ -463,15 +328,17 @@ export default function Feed() {
                                 <p className="text-xs text-zinc-500">{formatRelativeTime(comment.created_at)}</p>
                               </div>
                             </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-zinc-400 hover:text-red-300 hover:bg-red-950/40"
-                              onClick={() => handleDeleteComment(meme.id, comment.id)}
-                              disabled={commentDeletingId === comment.id}
-                            >
-                              {commentDeletingId === comment.id ? 'Deleting...' : 'Delete'}
-                            </Button>
+                            {canDeleteComment(comment) && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs text-zinc-400 hover:text-red-300 hover:bg-red-950/40"
+                                onClick={() => handleDeleteComment(meme.id, comment.id)}
+                                disabled={commentDeletingId === comment.id}
+                              >
+                                {commentDeletingId === comment.id ? 'Deleting...' : 'Delete'}
+                              </Button>
+                            )}
                           </div>
                           <p className="mt-2 text-sm text-zinc-300">{comment.content}</p>
                         </div>
