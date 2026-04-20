@@ -6,12 +6,14 @@ import { Input } from '../components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Label } from '../components/ui/label';
+import MemeComposer from '../components/meme/MemeComposer';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showComposer, setShowComposer] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -66,28 +68,37 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <Card className="w-full max-w-md bg-zinc-950 border-zinc-800 shadow-2xl backdrop-blur-xl">
-        <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <Avatar className="w-32 h-32 border-4 border-violet-500 shadow-xl shadow-violet-500/20">
-              <AvatarImage src={getAvatarSrc()} alt={user.username} className="object-cover" />
-              <AvatarFallback className="bg-zinc-800 text-3xl font-bold text-violet-400">
-                {user.username.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div>
-            <CardTitle className="text-3xl font-bold tracking-tight text-zinc-100">
-              {user.username}
-            </CardTitle>
-            <CardDescription className="text-zinc-400 mt-1">
-              {user.email}
-            </CardDescription>
+    <div className="mx-auto max-w-5xl space-y-6 px-4">
+      <Card className="bg-zinc-950 border-zinc-800 shadow-2xl backdrop-blur-xl">
+        <CardHeader className="space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-20 h-20 border-2 border-violet-500 shadow-xl shadow-violet-500/20">
+                <AvatarImage src={getAvatarSrc()} alt={user.username} className="object-cover" />
+                <AvatarFallback className="bg-zinc-800 text-2xl font-bold text-violet-400">
+                  {user.username.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle className="text-2xl font-bold tracking-tight text-zinc-100">
+                  {user.username}
+                </CardTitle>
+                <CardDescription className="text-zinc-400 mt-1">
+                  {user.email}
+                </CardDescription>
+              </div>
+            </div>
+            <Button
+              type="button"
+              onClick={() => setShowComposer((prev) => !prev)}
+              className="bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
+            >
+              {showComposer ? 'Close Composer' : 'Create Post'}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mt-6 pt-6 border-t border-zinc-800">
+          <div className="pt-4 border-t border-zinc-800">
             <h3 className="text-lg font-medium text-zinc-200 mb-4">Update Avatar</h3>
             <form onSubmit={handleUpload} className="space-y-4">
               <div className="space-y-2">
@@ -116,6 +127,8 @@ export default function Profile() {
           </div>
         </CardContent>
       </Card>
+
+      {showComposer && <MemeComposer />}
     </div>
   );
 }
