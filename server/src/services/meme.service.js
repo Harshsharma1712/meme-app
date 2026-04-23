@@ -1,5 +1,6 @@
 import db from "../db/index.js";
 import { sql } from "drizzle-orm";
+import { uploadToImagekit } from "../utils/uploadMedia.js";
 
 // get templates
 export const getTemplatesService = async () => {
@@ -74,6 +75,81 @@ export const createMemeService = async ({
 
     return createdMeme;
 };
+
+// service for user created meme uploding 
+export const uploadMemeService = async ({
+    file,
+    userId,
+    caption,
+    topic,
+    style
+}) => {
+
+    if (!file) {
+        throw new Error("No file uploaded");
+    }
+
+    // Upload to ImageKit
+    const uploadRes = await uploadToImagekit({
+        fileBuffer: file.buffer,
+        fileName: `${userId}-${Date.now()}-${file.originalname}`,
+        folder: "/memes"
+    })
+    console.log(uploadRes);
+
+    // insert into media
+    const mediaResult = await db.execute(sql`
+        INSERT INTO media (
+            url,
+            file_id,
+            file_type,
+            format,
+            width,
+            height,
+            size_kb,
+            uploaded_by
+        )
+        VALUES (
+            ${uploadRes.url},
+            ${uploadRes.fileId},
+            ${file.mimetype},
+            ${uploadRes.fileType},
+            ${uploadRes.width},
+            ${uploadRes.height},
+            ${Math.round(file.size / 1024)},
+            ${userId}
+        )
+        RETURNING *    
+    `);
+
+    const mediaId = mediaResult?.rows[0].id;
+
+    // Insert into memes (template_id = NULL)
+    const memeResult = await db.execute(sql`
+        INSERT INTO memes (
+            user_id,
+            template_id,
+            media_id,
+            caption,
+            topic,
+            style,
+            is_ai_generated
+        )
+        VALUES (
+            ${userId},
+            NULL,
+            ${mediaId},
+            ${caption},
+            ${topic},
+            ${style},
+            false
+        )
+        RETURNING *
+    `);
+
+    return memeResult?.rows[0];
+
+}
 
 // get memes (feed)
 export const getMemeService = async () => {
