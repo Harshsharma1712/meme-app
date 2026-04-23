@@ -5,7 +5,9 @@ import {
     getTemplatesController,
     createMemeController,
     getMemesController,
+    uploadMemeController
 } from "../controllers/meme.controller.js";
+import { upload } from "../utils/multer.js";
 
 const router = express.Router();
 
@@ -37,6 +39,15 @@ router.post("/post",
     ]
     , authMiddleware,
     createMemeController);
+
+
+// POST meme by user
+router.post(
+    "/upload",
+    upload.single("meme"),
+    authMiddleware,
+    uploadMemeController
+)
 
 // get memes
 router.get("/get", getMemesController);
