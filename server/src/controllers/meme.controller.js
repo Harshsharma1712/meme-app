@@ -1,5 +1,10 @@
 import { successResponse, errorResponse } from "../utils/response.js";
-import { getTemplatesService, getMemeService, createMemeService } from "../services/meme.service.js";
+import { 
+    getTemplatesService,
+    getMemeService, 
+    createMemeService,
+    uploadMemeService 
+} from "../services/meme.service.js";
 import { validationResult } from "express-validator";
 
 // GET /templates
@@ -43,6 +48,37 @@ export const createMemeController = async (req, res) => {
         return errorResponse(res, error, 400);
     }
 }
+
+// POST meme by user from system 
+export const uploadMemeController = async (req, res) => {
+    try {
+        
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array()[0].msg, 400);
+        }
+
+        const userId = req.user.id;
+        const file = req.file
+        const { caption, topic, style } = req.body;
+
+        const meme = await uploadMemeService({
+            file: file,
+            userId: userId,
+            caption,
+            topic,
+            style
+        });
+
+        return successResponse(res, "Meme Post successfully", meme, 201);
+
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, error, 400);
+    }
+}
+
 
 // get memes
 export const getMemesController = async (req, res) => {

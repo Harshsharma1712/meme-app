@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import { Button } from '../components/ui/button';
@@ -6,9 +7,10 @@ import { Input } from '../components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Label } from '../components/ui/label';
-import MemeComposer from '../components/meme/MemeComposer';
+import MemeUploadComposer from '../components/meme/MemeUploadComposer';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -90,10 +92,10 @@ export default function Profile() {
             </div>
             <Button
               type="button"
-              onClick={() => setShowComposer((prev) => !prev)}
+              onClick={() => setShowComposer(true)}
               className="bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
             >
-              {showComposer ? 'Close Composer' : 'Create Post'}
+              Post Meme
             </Button>
           </div>
         </CardHeader>
@@ -128,7 +130,19 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {showComposer && <MemeComposer />}
+      {showComposer && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-4 sm:items-center">
+          <div className="w-full max-w-2xl">
+            <MemeUploadComposer
+              onCancel={() => setShowComposer(false)}
+              onCreated={() => {
+                setShowComposer(false);
+                navigate('/feed');
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
