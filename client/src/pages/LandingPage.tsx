@@ -52,7 +52,7 @@ export default function LandingPage() {
         ))}
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-4">
+      {/* <section className="mx-auto max-w-6xl space-y-4">
         <h2 className="text-2xl font-semibold text-[#E5E5E5]">Trending Previews</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {previewMemes.map((meme, index) => (
@@ -76,7 +76,7 @@ export default function LandingPage() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <footer className="mx-auto max-w-6xl border-t border-white/10 pt-6 text-sm text-[#E5E5E5]/45">
         Meme Hub © {new Date().getFullYear()} - Built for meme culture.
