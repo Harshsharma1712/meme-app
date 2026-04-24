@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
@@ -47,21 +48,26 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <Card className="w-full max-w-md bg-zinc-950 border-zinc-800 shadow-2xl backdrop-blur-xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="flex min-h-[80vh] items-center justify-center px-4"
+    >
+      <Card className="w-full max-w-md border-white/10 bg-[#171717]/80 shadow-2xl backdrop-blur-xl">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold tracking-tight bg-linear-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-semibold tracking-tight text-[#E5E5E5]">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardDescription className="text-[#E5E5E5]/60">
             Enter your credentials to access your account.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            {error && <div className="p-3 text-sm font-medium text-red-400 bg-red-950/50 rounded-md border border-red-900/50">{error}</div>}
+            {error && <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm font-medium text-red-200">{error}</div>}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
+              <Label htmlFor="email" className="text-[#E5E5E5]/80">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -69,11 +75,11 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-zinc-900 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-violet-500 focus-visible:border-violet-500"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5] placeholder:text-[#E5E5E5]/35 focus-visible:border-[#3B82F6] focus-visible:ring-[#3B82F6]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-300">Password</Label>
+              <Label htmlFor="password" className="text-[#E5E5E5]/80">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -81,27 +87,27 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-zinc-900 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-violet-500 focus-visible:border-violet-500"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5] placeholder:text-[#E5E5E5]/35 focus-visible:border-[#3B82F6] focus-visible:ring-[#3B82F6]"
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 pt-2">
             <Button
               type="submit"
-              className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium shadow-lg hover:shadow-violet-500/25 transition-all duration-300"
+              className="w-full bg-[#3B82F6] text-white hover:bg-[#2563EB]"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}
             </Button>
-            <div className="text-sm text-center text-zinc-400 font-medium">
+            <div className="text-center text-sm font-medium text-[#E5E5E5]/60">
               Don't have an account?{' '}
-              <Link to="/register" className="text-violet-400 hover:text-violet-300 hover:underline transition-colors">
+              <Link to="/register" className="text-[#3B82F6] hover:underline">
                 Register
               </Link>
             </div>
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </motion.div>
   );
 }
