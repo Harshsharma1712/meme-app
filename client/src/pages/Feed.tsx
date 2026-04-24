@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { Card, CardContent } from '../components/ui/card';
+import MemeCard from '../components/meme/MemeCard';
 
 interface MemePost {
   id: string;
@@ -206,19 +206,24 @@ export default function Feed() {
   };
 
   return (
-    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="space-y-6 px-4 sm:px-6 lg:px-8"
+    >
       {error && (
-        <div className="rounded-md border border-red-900/50 bg-red-950/40 p-3 text-sm text-red-300">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
           {error}
         </div>
       )}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-zinc-100">Meme Feed</h2>
+          <h2 className="text-2xl font-semibold text-[#E5E5E5]">Meme Feed</h2>
           <Button
             type="button"
             variant="ghost"
-            className="text-zinc-300 hover:bg-white/10 hover:text-zinc-100"
+            className="border border-white/10 text-[#E5E5E5]/80 hover:bg-white/10 hover:text-[#E5E5E5]"
             onClick={async () => {
               const memeList = await loadMemes();
               await loadLikeMeta(memeList);
@@ -230,127 +235,49 @@ export default function Feed() {
         </div>
 
         {loadingFeed ? (
-          <Card className="bg-zinc-950 border-zinc-800">
-            <CardContent className="py-8 text-center text-zinc-400">Loading memes...</CardContent>
-          </Card>
+          <div className="grid gap-4">
+            {[1, 2, 3].map((item) => (
+              <Card key={item} className="border-white/10 bg-[#171717]/80 p-5 backdrop-blur-xl">
+                <CardContent className="space-y-4 p-0">
+                  <div className="h-5 w-44 animate-pulse rounded bg-white/10" />
+                  <div className="h-64 animate-pulse rounded-xl bg-white/8" />
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-white/10" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         ) : memes.length === 0 ? (
-          <Card className="bg-zinc-950 border-zinc-800">
-            <CardContent className="py-8 text-center text-zinc-400">No memes yet. Be the first to post.</CardContent>
+          <Card className="border-white/10 bg-[#171717]/80">
+            <CardContent className="py-8 text-center text-[#E5E5E5]/60">No memes yet. Be the first to post.</CardContent>
           </Card>
         ) : (
-          memes.map((meme) => (
-            <Card key={meme.id} className="bg-zinc-950 border-zinc-800 overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9 border border-zinc-700">
-                      <AvatarImage src={meme.avatar_url} alt={meme.username} />
-                      <AvatarFallback className="bg-zinc-800 text-zinc-200">
-                        {meme.username?.charAt(0)?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-base text-zinc-100">{meme.username}</CardTitle>
-                      <CardDescription className="text-xs text-zinc-400">
-                        {formatRelativeTime(meme.created_at)}
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="text-xs text-zinc-400">
-                    #{meme.topic} • {meme.style}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <img src={meme.media_url} alt={meme.caption} className="w-full max-h-100 sm:max-h-125 md:max-h-150 object-contain bg-black rounded-lg border border-zinc-800" />
-                <p className="text-zinc-200">{meme.caption}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className={`h-8 px-3 ${likeMeta[meme.id]?.is_liked ? 'text-fuchsia-300 hover:text-fuchsia-200' : 'text-zinc-300 hover:text-zinc-100'} hover:bg-white/10`}
-                    onClick={() => handleToggleLike(meme.id)}
-                    disabled={likeUpdatingId === meme.id}
-                  >
-                    {likeUpdatingId === meme.id ? 'Updating...' : likeMeta[meme.id]?.is_liked ? 'Unlike' : '♡ Like'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="h-8 px-3 text-zinc-300 hover:text-zinc-100 hover:bg-white/10"
-                    onClick={() => handleToggleComments(meme.id)}
-                  >
-                    {expandedComments[meme.id] ? 'Hide Comments' : 'Comments'}
-                  </Button>
-                </div>
-                <div className="text-sm text-zinc-400">
-                  {likeMeta[meme.id]?.count ?? Number(meme.likes_count || 0)} likes • {commentMap[meme.id]?.length ?? Number(meme.comments_count || 0)} comments
-                </div>
-
-                {expandedComments[meme.id] && (
-                  <div className="space-y-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
-                    <div className="flex gap-2">
-                      <Input
-                        value={commentDrafts[meme.id] || ''}
-                        onChange={(event) =>
-                          setCommentDrafts((prev) => ({ ...prev, [meme.id]: event.target.value }))
-                        }
-                        placeholder="Write a comment..."
-                        className="bg-zinc-950 border-zinc-800 text-zinc-100"
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => handlePostComment(meme.id)}
-                        disabled={commentPostingId === meme.id}
-                        className="bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
-                      >
-                        {commentPostingId === meme.id ? 'Posting...' : 'Post'}
-                      </Button>
-                    </div>
-
-                    {commentLoading[meme.id] ? (
-                      <p className="text-sm text-zinc-400">Loading comments...</p>
-                    ) : (commentMap[meme.id] || []).length === 0 ? (
-                      <p className="text-sm text-zinc-400">No comments yet.</p>
-                    ) : (
-                      (commentMap[meme.id] || []).map((comment) => (
-                        <div key={comment.id} className="rounded-md border border-zinc-800 bg-zinc-950 p-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-start gap-2">
-                              <Avatar className="h-7 w-7 border border-zinc-700">
-                                <AvatarImage src={comment.avatar_url} alt={comment.username} />
-                                <AvatarFallback className="bg-zinc-800 text-xs text-zinc-200">
-                                  {comment.username?.charAt(0)?.toUpperCase() || 'U'}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="text-sm font-medium text-zinc-200">{comment.username}</p>
-                                <p className="text-xs text-zinc-500">{formatRelativeTime(comment.created_at)}</p>
-                              </div>
-                            </div>
-                            {canDeleteComment(comment) && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                className="h-7 px-2 text-xs text-zinc-400 hover:text-red-300 hover:bg-red-950/40"
-                                onClick={() => handleDeleteComment(meme.id, comment.id)}
-                                disabled={commentDeletingId === comment.id}
-                              >
-                                {commentDeletingId === comment.id ? 'Deleting...' : 'Delete'}
-                              </Button>
-                            )}
-                          </div>
-                          <p className="mt-2 text-sm text-zinc-300">{comment.content}</p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))
+          <div className="grid gap-5 lg:grid-cols-2">
+            {memes.map((meme) => (
+              <MemeCard
+                key={meme.id}
+                meme={meme}
+                likeMeta={likeMeta[meme.id]}
+                isLikeUpdating={likeUpdatingId === meme.id}
+                isExpanded={Boolean(expandedComments[meme.id])}
+                comments={commentMap[meme.id] || []}
+                isCommentsLoading={Boolean(commentLoading[meme.id])}
+                commentDraft={commentDrafts[meme.id] || ''}
+                isPostingComment={commentPostingId === meme.id}
+                deletingCommentId={commentDeletingId}
+                onToggleLike={() => handleToggleLike(meme.id)}
+                onToggleComments={() => handleToggleComments(meme.id)}
+                onCommentDraftChange={(value) =>
+                  setCommentDrafts((prev) => ({ ...prev, [meme.id]: value }))
+                }
+                onPostComment={() => handlePostComment(meme.id)}
+                onDeleteComment={(commentId) => handleDeleteComment(meme.id, commentId)}
+                canDeleteComment={canDeleteComment}
+                formatRelativeTime={formatRelativeTime}
+              />
+            ))}
+          </div>
         )}
       </section>
-    </div>
+    </motion.div>
   );
 }
