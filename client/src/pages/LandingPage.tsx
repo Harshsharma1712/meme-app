@@ -3,12 +3,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 
-const previewMemes = [
-  { id: '1', title: 'When build passes on first try', subtitle: 'Classic dev joy', likes: '2.4k' },
-  { id: '2', title: 'Friday deploy energy', subtitle: 'Risk mode: enabled', likes: '1.9k' },
-  { id: '3', title: 'Debugging at 2 AM', subtitle: 'Coffee-driven logic', likes: '3.1k' },
-];
-
 export default function LandingPage() {
   return (
     <motion.div

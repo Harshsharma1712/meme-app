@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import Feed from './pages/Feed';
 import LandingPage from './pages/LandingPage';
 import Navbar from './components/layout/Navbar';
+
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -21,6 +22,20 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return <>{children}</>;
 };
 
+const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center text-[#E5E5E5]/60">Loading...</div>;
+  }
+
+  if (user) {
+    return <Navigate to="/feed" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const AppRoutes = () => {
   const { user } = useAuth();
 
@@ -29,9 +44,9 @@ const AppRoutes = () => {
       <Navbar />
       <main className="mx-auto max-w-7xl py-8">
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={user ? <Navigate to="/feed" replace /> : <LandingPage />} />
+          <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+          <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
           <Route path="/home" element={user ? <Navigate to="/feed" replace /> : <Navigate to="/" replace />} />
           <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
