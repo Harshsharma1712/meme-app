@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import api from '../../lib/api';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import UploadZone from './UploadZone';
 
 interface MemeUploadComposerProps {
   onCreated?: () => Promise<void> | void;
@@ -79,37 +81,30 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
   };
 
   return (
-    <Card className="border-zinc-800 bg-zinc-950 shadow-2xl">
+    <Card className="border-white/10 bg-[#171717]/85 shadow-2xl backdrop-blur-xl">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-zinc-100">Post Meme</CardTitle>
-        <CardDescription className="text-zinc-400">
+        <CardTitle className="text-[#E5E5E5]">Post Meme</CardTitle>
+        <CardDescription className="text-[#E5E5E5]/60">
           Upload your meme image and add details before publishing.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="meme-file" className="text-zinc-300">
+            <Label htmlFor="meme-file" className="text-[#E5E5E5]/80">
               Meme image
             </Label>
-            <Input
-              id="meme-file"
-              type="file"
-              accept="image/*"
-              required
-              onChange={(event) => setFile(event.target.files?.[0] || null)}
-              className="cursor-pointer border-zinc-800 bg-zinc-900 text-zinc-200 file:mr-4 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-zinc-100 hover:file:bg-zinc-700"
-            />
+            <UploadZone id="meme-file" onChange={(event) => setFile(event.target.files?.[0] || null)} />
           </div>
 
           {filePreviewUrl && (
-            <div className="overflow-hidden rounded-lg border border-zinc-800 bg-black">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-black">
               <img src={filePreviewUrl} alt="Meme preview" className="h-64 w-full object-contain" />
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="meme-caption" className="text-zinc-300">
+            <Label htmlFor="meme-caption" className="text-[#E5E5E5]/80">
               Caption
             </Label>
             <Input
@@ -118,13 +113,13 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
               onChange={(event) => handleInputChange('caption', event.target.value)}
               required
               placeholder="Write your caption..."
-              className="border-zinc-800 bg-zinc-900 text-zinc-100"
+              className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5] placeholder:text-[#E5E5E5]/35"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="meme-topic" className="text-zinc-300">
+              <Label htmlFor="meme-topic" className="text-[#E5E5E5]/80">
                 Topic
               </Label>
               <Input
@@ -133,11 +128,11 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
                 onChange={(event) => handleInputChange('topic', event.target.value)}
                 required
                 placeholder="Humor, office, coding..."
-                className="border-zinc-800 bg-zinc-900 text-zinc-100"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5] placeholder:text-[#E5E5E5]/35"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="meme-style" className="text-zinc-300">
+              <Label htmlFor="meme-style" className="text-[#E5E5E5]/80">
                 Style
               </Label>
               <Input
@@ -146,7 +141,7 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
                 onChange={(event) => handleInputChange('style', event.target.value)}
                 required
                 placeholder="Dark, witty, sarcastic..."
-                className="border-zinc-800 bg-zinc-900 text-zinc-100"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5] placeholder:text-[#E5E5E5]/35"
               />
             </div>
           </div>
@@ -166,12 +161,12 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
           </div> */}
 
           {successMessage && (
-            <div className="rounded-md border border-emerald-900/60 bg-emerald-950/40 p-3 text-sm text-emerald-300">
+            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
               {successMessage}
             </div>
           )}
           {error && (
-            <div className="rounded-md border border-red-900/60 bg-red-950/40 p-3 text-sm text-red-300">
+            <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
               {error}
             </div>
           )}
@@ -182,19 +177,21 @@ export default function MemeUploadComposer({ onCreated, onCancel }: MemeUploadCo
                 type="button"
                 variant="ghost"
                 onClick={onCancel}
-                className="text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+                className="text-[#E5E5E5]/75 hover:bg-white/10 hover:text-[#E5E5E5]"
                 disabled={posting}
               >
                 Cancel
               </Button>
             )}
-            <Button
-              type="submit"
-              disabled={posting}
-              className="bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
-            >
-              {posting ? 'Posting...' : 'Post Meme'}
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <Button
+                type="submit"
+                disabled={posting}
+                className="bg-[#3B82F6] text-white hover:bg-[#2563EB]"
+              >
+                {posting ? 'Posting...' : 'Post Meme'}
+              </Button>
+            </motion.div>
           </div>
         </form>
       </CardContent>

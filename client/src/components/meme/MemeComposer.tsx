@@ -84,17 +84,17 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
   };
 
   return (
-    <Card className="bg-zinc-950 border-zinc-800">
+    <Card className="border-white/10 bg-[#171717]/80 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle className="text-zinc-100">Create Meme</CardTitle>
-        <CardDescription className="text-zinc-400">
+        <CardTitle className="text-[#E5E5E5]">Create Meme</CardTitle>
+        <CardDescription className="text-[#E5E5E5]/60">
           Pick a template and craft your next post.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleCreateMeme} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="template-select" className="text-zinc-300">
+            <Label htmlFor="template-select" className="text-[#E5E5E5]/80">
               Template
             </Label>
             <select
@@ -103,7 +103,7 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
               onChange={(event) => handleInputChange('template_id', event.target.value)}
               required
               disabled={loadingTemplates}
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-60"
+              className="w-full rounded-md border border-white/10 bg-[#0F0F0F] px-3 py-2 text-sm text-[#E5E5E5] focus:outline-none focus:ring-2 focus:ring-[#3B82F6] disabled:opacity-60"
             >
               <option value="">{loadingTemplates ? 'Loading templates...' : 'Select a template'}</option>
               {templates.map((template) => (
@@ -115,7 +115,7 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
           </div>
 
           {selectedTemplate && (
-            <div className="overflow-hidden rounded-lg border border-zinc-800 bg-black">
+            <div className="overflow-hidden rounded-lg border border-white/10 bg-black">
               <img
                 src={selectedTemplate.media_url}
                 alt={selectedTemplate.name}
@@ -126,7 +126,7 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="topic" className="text-zinc-300">
+              <Label htmlFor="topic" className="text-[#E5E5E5]/80">
                 Topic
               </Label>
               <Input
@@ -135,11 +135,11 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
                 onChange={(event) => handleInputChange('topic', event.target.value)}
                 placeholder="Relationship, office, tech..."
                 required
-                className="bg-zinc-900 border-zinc-800 text-zinc-100"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="style" className="text-zinc-300">
+              <Label htmlFor="style" className="text-[#E5E5E5]/80">
                 Style
               </Label>
               <Input
@@ -148,13 +148,13 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
                 onChange={(event) => handleInputChange('style', event.target.value)}
                 placeholder="Humor, sarcasm, satire..."
                 required
-                className="bg-zinc-900 border-zinc-800 text-zinc-100"
+                className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5]"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="caption" className="text-zinc-300">
+            <Label htmlFor="caption" className="text-[#E5E5E5]/80">
               Caption
             </Label>
             <Input
@@ -163,17 +163,17 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
               onChange={(event) => handleInputChange('caption', event.target.value)}
               placeholder="Write your caption..."
               required
-              className="bg-zinc-900 border-zinc-800 text-zinc-100"
+              className="border-white/10 bg-[#0F0F0F] text-[#E5E5E5]"
             />
           </div>
 
           {postMessage && (
-            <div className="rounded-md border border-emerald-900/50 bg-emerald-950/40 p-3 text-sm text-emerald-300">
+            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
               {postMessage}
             </div>
           )}
           {error && (
-            <div className="rounded-md border border-red-900/50 bg-red-950/40 p-3 text-sm text-red-300">
+            <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
               {error}
             </div>
           )}
@@ -181,7 +181,7 @@ export default function MemeComposer({ onCreated }: MemeComposerProps) {
           <Button
             type="submit"
             disabled={posting || !formData.template_id}
-            className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
+            className="w-full bg-[#3B82F6] text-white hover:bg-[#2563EB]"
           >
             {posting ? 'Posting...' : 'Post Meme'}
           </Button>

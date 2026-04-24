@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
@@ -55,12 +56,11 @@ export default function Profile() {
   };
 
   if (!user) {
-    return <div className="text-center mt-10 text-zinc-400">Please log in to view your profile.</div>;
+    return <div className="mt-10 text-center text-[#E5E5E5]/60">Please log in to view your profile.</div>;
   }
 
   // Use baseUrl from API for relative avatar URLs if necessary
   const getAvatarSrc = () => {
-    console.log(user)
     if (!user.avatarUrl) return '';
     if (user.avatarUrl.startsWith('http')) return user.avatarUrl;
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -70,22 +70,27 @@ export default function Profile() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4">
-      <Card className="bg-zinc-950 border-zinc-800 shadow-2xl backdrop-blur-xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="mx-auto max-w-5xl space-y-6 px-4"
+    >
+      <Card className="border-white/10 bg-[#171717]/80 shadow-2xl backdrop-blur-xl">
         <CardHeader className="space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <Avatar className="w-20 h-20 border-2 border-violet-500 shadow-xl shadow-violet-500/20">
+              <Avatar className="h-20 w-20 border-2 border-[#3B82F6]/70 shadow-xl shadow-[#3B82F6]/20">
                 <AvatarImage src={getAvatarSrc()} alt={user.username} className="object-cover" />
-                <AvatarFallback className="bg-zinc-800 text-2xl font-bold text-violet-400">
+                <AvatarFallback className="bg-[#111111] text-2xl font-bold text-[#E5E5E5]">
                   {user.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl font-bold tracking-tight text-zinc-100">
+                <CardTitle className="text-2xl font-semibold tracking-tight text-[#E5E5E5]">
                   {user.username}
                 </CardTitle>
-                <CardDescription className="text-zinc-400 mt-1">
+                <CardDescription className="mt-1 text-[#E5E5E5]/55">
                   {user.email}
                 </CardDescription>
               </div>
@@ -93,35 +98,35 @@ export default function Profile() {
             <Button
               type="button"
               onClick={() => setShowComposer(true)}
-              className="bg-linear-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500"
+              className="bg-[#3B82F6] text-white hover:bg-[#2563EB]"
             >
               Post Meme
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="pt-4 border-t border-zinc-800">
-            <h3 className="text-lg font-medium text-zinc-200 mb-4">Update Avatar</h3>
+          <div className="border-t border-white/10 pt-4">
+            <h3 className="mb-4 text-lg font-medium text-[#E5E5E5]">Update Avatar</h3>
             <form onSubmit={handleUpload} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="avatar-upload" className="text-zinc-300">Choose Image</Label>
+                <Label htmlFor="avatar-upload" className="text-[#E5E5E5]/80">Choose Image</Label>
                 <Input
                   id="avatar-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="bg-zinc-900 border-zinc-800 text-zinc-300 file:bg-zinc-800 file:text-zinc-100 file:border-0 file:mr-4 file:py-1.5 file:px-3 file:rounded-md hover:file:bg-zinc-700 transition-all cursor-pointer"
+                  className="cursor-pointer border-white/10 bg-[#0F0F0F] text-[#E5E5E5]/70 file:mr-4 file:rounded-md file:border-0 file:bg-[#171717] file:px-3 file:py-1.5 file:text-[#E5E5E5] hover:file:bg-[#222222]"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={!file || loading}
-                className="w-full bg-zinc-800 hover:bg-zinc-700 text-white transition-all duration-300"
+                className="w-full bg-[#3B82F6] text-white hover:bg-[#2563EB]"
               >
                 {loading ? 'Uploading...' : 'Upload Avatar'}
               </Button>
               {message && (
-                <div className={`p-3 text-sm font-medium rounded-md border ${message.includes('success') ? 'text-emerald-400 bg-emerald-950/50 border-emerald-900/50' : 'text-red-400 bg-red-950/50 border-red-900/50'}`}>
+                <div className={`rounded-md border p-3 text-sm font-medium ${message.includes('success') ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200' : 'border-red-500/30 bg-red-500/10 text-red-200'}`}>
                   {message}
                 </div>
               )}
@@ -131,7 +136,7 @@ export default function Profile() {
       </Card>
 
       {showComposer && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-4 sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/85 p-4 sm:items-center">
           <div className="w-full max-w-2xl">
             <MemeUploadComposer
               onCancel={() => setShowComposer(false)}
@@ -143,6 +148,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
